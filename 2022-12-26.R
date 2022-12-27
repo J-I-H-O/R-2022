@@ -122,6 +122,7 @@ print(length(1:100))     # [1] 100
 
 ## 2.2.5 논리연산자
 # 등호와 부등호는 (>, <, >=, <=, ==, !=)로 동일함
+# and는 &, or는 | 하나로 표현됨
 # 논리연산도 벡터에 포함된 각각의 값에 대한 연산으로 바뀌어 실행됨
 
 # 각 원소가 5보다 크거나 같으면 TRUE, 아니면 FALSE 출력
@@ -175,3 +176,148 @@ fac2_fav_season[8] = "abc"     # Warning message:
                                #   요인의 수준(factor level)이 올바르지 않아 NA가 생성되었습니다.
 
 print(fac2_fav_season)         # [1] spring fall   winter summer summer spring summer <NA>  
+
+
+### 2.3 행렬(matrix)과 데이터프레임(data frame)
+# 1차원 데이터: 단일 주제의 데이터 <- 벡터
+# 2차원 데이터: 여러 주제의 데이터(여러개의 열을 가짐) <- 매트릭스, 데이터프레임
+
+## 2.3.1 행렬 이해
+# 2차원 테이블 형태의 자료구조
+# 모든 셀에 저장되는 값은 동일한 자료형이어야 함
+# matrix() 함수를 이용하여 행렬 생성
+  # 매개변수 nrow, ncol : 행렬의 행과 열의 개수 지정
+  # 매개변수 byrow : TRUE인 경우 행렬에 저장될 값들을 행 방향으로 채움. 기본값은 FALSE, 열 방향으로 채워짐
+
+m1 <- matrix(1:20, nrow=4, ncol=5)  # 1:20와 nrow만 인자로 넘겨도 매트릭스는 생성됨. 1:20과 ncol만 넘겨도 마찬가지
+m2 <- matrix(1:20, nrow=4, ncol=5, byrow=TRUE)
+print(m1)
+print(m2)
+
+# 2개의 인덱스 값으로 행렬의 원소 추출 가능
+# [행, 열]과 같이 사용
+# 행 또는 열을 지정하지 않는 경우 입력한 열 또는 행 전체를 추출
+print(m1[2, 4]) # 2행 4열의 값 출력
+print(m1[3, ])  # 3행 전체 출력
+print(m1[, 5])  # 5열 전체 출력
+print(m1[,])    # 모든 행, 열을 출력(매트릭스 전체 출력)
+
+# rbind(), cbind() 함수를 이용해 벡터 또는 행렬 결합 가능
+# rbind() : row 방향으로 붙임 (아래에 결합)
+# cbind() : column 방향으로 붙임 (오른쪽에 결합)
+m3 <- rbind(m1, m2)
+m4 <- cbind(m1, m2)
+m5 <- cbind(m1, c(1:4))
+print(m3)
+print(m4)
+print(m5)
+
+# rownames(), colnames() 함수를 이용해 행과 열에 이름을 지정할 수 있음
+score <- matrix(c(80, 67, 74,
+                  82, 95, 88,
+                  75, 84, 82),
+                nrow = 3, ncol = 3, byrow = TRUE)
+rownames(score) <- c("Kim", "Lee", "Park")
+colnames(score) <- c("Kor", "Eng", "Math")
+print(score)
+print(rownames(score))
+print(colnames(score))
+
+
+## 2.3.2 데이터프레임 이해
+# 서로 다른 형태의 데이터를 2차원 데이터 형태로 묶을 수 있는 자료구조
+# 행렬 : 저장되는 모든 값이 동일한 자료형
+# 데이터프레임 : 서로 다른 자료형의 값을 함께 저장할 수 있음
+# 다만 데이터프레임은 특정 열의 값들은 자료형이 동일해야함. 데이터테이블에서 각 열의 데이터가 동일한 특성을 가짐과 같음
+# 여러개의 벡터를 결합하는 형태로, 각각의 열을 생성해 결합함
+# data.frame() 함수를 이용해 생성
+
+df1 <- data.frame(name = c("Kim", "Lee", "Park", "Choi"),
+                  age = c(24, 25, 22, 27),
+                  btype = factor(c("A", "B", "O", "B")),
+                  religion = c(TRUE, FALSE, TRUE, TRUE))
+print(df1)
+
+# 매트릭스와 동일한 방법으로 데이터 추출 가능
+print(df1[1, 2])   # 1행 2열에 위치한 값 출력
+print(df1[, 3])    # 3열의 모든 값 출력
+print(df1[, 1:2])  # 여러개의 행 또는 열 추출 가능
+print(df1[, c(2, 4)])    # 여러개의 행 또는 열 추출 가능
+print(df1[, "religion"]) # 인덱스에서 열의 이름으로도 접근 가능
+
+# 데이터프레임에서는 열의 이름을 통해 열 데이터를 추출할 수 있음
+# `(데이터프레임 이름)$(열 이름)`
+print(df1$btype)
+
+# cbind()와 rbind()를 이용해 벡터 또는 데이터프레임과 결합 가능
+df2 <- cbind(df1, c("dog", "cat", "bird", "dog"))
+colnames(df2)[5] <- "pet"  # 새로 추가된 5번째 열에 "pet" 이라는 이름 지정. 
+                           # 지정하지 않을 시 열의 이름으로 벡터 자체가 들어감
+print(df2)
+
+
+## 2.3.3 행렬과 데이터프레임 다루기
+print(iris)                     # iris는 기본으로 제공되는 data set
+print(dim(iris))                # dim() : 행과 열의 개수 출력
+print(nrow(iris))               # nrow() : 행의 개수 출력
+print(ncol(iris))               # ncol() : 열의 개수 출력
+print(colnames(iris))           # colnames() : 열 이름 출력, names()와 결과 동일
+print(head(iris))               # head() : 데이터셋의 앞부분 일부 출력
+print(head(iris, n=10))         # parameter로 n을 주어 미리보기 개수 지정 가능
+print(tail(iris))               # tail() : 데이터셋의 뒷부분 일부 출력
+print(str(iris))                # str() : 데이터셋의 요약 정보 출력
+
+print(iris[, 5])                # iris[, "Species"] 와 동일한 결과 출력 <- 열의 이름으로 접근 가능
+print(unique(iris[, 5]))        # unique() : 어떤 결과에서 중복을 제거하여 데이터 보여줌
+print(table(iris[, "Species"])) # table()을 통해 빈도 체크
+
+print(colSums(iris[, -5]))      # 각 열별 합계 출력
+print(colMeans(iris[, -5]))     # 각 열별 평균 출력
+print(rowSums(iris[, -5]))      # 각 행별 합계 출력
+print(rowMeans(iris[, -5]))     # 각 행별 평균 출력
+
+
+# subset() 함수 이용하여 조건에 맞는 행과 열의 값 추출할 수 있음
+  # 매개변수 subset : 행에 대한 조건 지정. 조건이 TRUE인 값들만 추출하여 출력됨
+  # 매개변수 select ; 추출하고자하는 열 지정
+iris.new1 <- subset(iris, Species == "setosa")
+iris.new2 <- subset(iris, subset = Sepal.Length > 5.0 & Sepal.Width > 4.0)
+iris.new3 <- subset(iris, select = c("Sepal.Length", "Sepal.Width"))
+
+print(iris.new1)
+print(iris.new2)
+print(iris.new3)
+
+
+## 행렬 및 데이터프레임 산술 연산
+# 벡터와 마찬가지로 행렬이나 데이터프레임도 각 원소에 대한 연산으로 바뀌어 실행됨
+# 행렬간의 연산은 동일한 위치에 있는 값끼리의 연산으로 바뀌어 실행되므로 두 행렬의 크기가 같아야함.
+m1 <- matrix(1:20, nrow = 4, ncol = 5)    # 4x5 행렬
+m2 <- matrix(21:40, nrow = 4, ncol = 5)   # 4x5 행렬
+
+print(m1 + 2)   # m1의 모든 원소에 2를 더한 매트릭스 출력
+print(m2 * 3)   # m2의 모든 원소에 3을 곱한 매트릭스 출력
+print(m1 + m2)  # m1과 m2의 모든 원소들을 각각 더한 매트릭스 출력. 두 매트릭스 크기가 같아야함.
+print(m1 * m2)  # m1과 m2의 모든 원소들을 각각 곱함. 진정한 의미의 행렬곱(%*%)은 아님.
+
+m3 <- matrix(1:6, nrow = 2, ncol = 3)     # 2x3 행렬
+m4 <- matrix(1:12, nrow = 3, ncol = 4)    # 3x4 행렬
+print(m3 %*% m4)                          # 실제 행렬곱을 위해 %*% 연산자 사용
+                                          # m3의 column 수와 m4의 row 수가 같아야 행렬곱 가능
+
+print(t(m1))    # t() 함수를 사용해 전치행렬 출력 가능
+
+
+### 2.4 외부 파일 읽기 및 쓰기
+# 2.4.1. 작업 폴더 설정
+# setwd() 함수를 이용하여 작업할 폴더의 경로 지정
+
+
+# 2.4.2. 외부 파일 읽기
+# read.csv() 함수를 이용해 외부에 있는 csv 파일을 풀러옴
+
+
+# 2.4.3. 외부 파일 쓰기
+# write.csv() 함수를 이용해 외부로 csv 파일을 저장
+
+
