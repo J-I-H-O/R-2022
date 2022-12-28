@@ -311,13 +311,19 @@ print(t(m1))    # t() 함수를 사용해 전치행렬 출력 가능
 ### 2.4 외부 파일 읽기 및 쓰기
 # 2.4.1. 작업 폴더 설정
 # setwd() 함수를 이용하여 작업할 폴더의 경로 지정
-
+rootDir = "C:/R-2022"
+dataDir = "/dataSet"
+dataPath = paste0(rootDir, dataDir)
+setwd(dataPath)
 
 # 2.4.2. 외부 파일 읽기
-# read.csv() 함수를 이용해 외부에 있는 csv 파일을 풀러옴
-
+# read.csv() 함수를 이용해 외부에 있는 csv 파일을 불러옴. dataFrame으로 불러와짐
+data <- read.csv("StudentSurvey.csv")
+head(data)
 
 # 2.4.3. 외부 파일 쓰기
 # write.csv() 함수를 이용해 외부로 csv 파일을 저장
+smoking <- subset(data, Smoke=="Yes")
+write.csv(smoking, "smoking.csv")
 
 
