@@ -91,21 +91,22 @@ fish_encounters %>%
               values_from = seen,
               values_fill = 0)                    # 결측값 대체
 
-# seprate 함수
+## 5.2.4 열의 분리 및 결합
+# seprate() 함수
 # 여러개의 변수가 하나의 열에 저장되어 있을 때, 이를 분리
 table3
 table3 %>%
   separate(col = rate,
-           into = c("cases", "population"))
+           into = c("cases", "population"),
+           sep = "/")
 
 # unite() 함수
 # 여러개의 열을 하나의 열로 결합
 table5
 table5 %>% unite(col = new_year, century, year) # century와 year를 결합해 new_year 열 생성
 
-# 
 
-## 5.2.3 결측값 처리
+## 5.2.5 결측값 처리
 # 결측값은 알려지지 않은 값을 표시. 결측값은 파급된다 = 결측값을 이용해 연산 시 결과는 결측값임을 뜻함.
 # is.na() 함수 : 결측값 확인
 NA > 5
@@ -115,3 +116,55 @@ NA / 2
 NA == NA
 
 is.na(NA)
+
+# 명시적 결측값 : NA로 표시된 값
+# 암묵적 결측값 : 데이터셋에 존재하지 않는 값
+stocks <- tibble(
+  year   = c(2015, 2015, 2015, 2015, 2016, 2016, 2016),
+  qtr    = c(   1,    2,    3,    4,    2,    3,    4),
+  return = c(1.88, 0.59, 0.35,   NA, 0.92, 0.17, 2.66)
+)
+
+stocks
+
+stocks %>%
+  pivot_wider(names_from = year,                     # year를 열로 pivot하여 명시적으로 만듬
+              values_from = return) %>%
+  pivot_longer(cols = c(`2015`, `2016`),             # 명시적 결측값이 중요하지 않다면
+               names_to = "year",                    # 암묵적으로 만듬(NA 제거)
+               values_to = "return",
+               values_drop_na = TRUE)
+
+# complete() 함수 : 입력한 열의 고유한 모든 조합을 찾은 후, 필요한 경우 명시적 결측값을 채움
+# fill() 함수 : 결측값을 가장 최근에 존재하는 값(이월된 마지막 관측값)으로 대체
+# drop_na() 함수 : 결측값이 존재하는 행 제거
+# replace_na() 함수 : 결측값을 특정 값으로 대체
+
+# Example for complete()
+stocks
+stocks %>% complete(year, qtr)  # (year, qtr) 쌍 중 (2016, 1) 쌍이 표기되어있지 않으므로 명시적 결측값을 채움
+
+# Example for fill()
+fillTibble <- tibble(person = c("Derrick Whitmore", NA, NA, "Katherine Burke"),
+       treatment = c(1, 2, 3, 1), response = c(7, 10, 9, 4))
+
+fillTibble
+fillTibble %>%
+  fill(person)
+
+# Example for drop_na()
+mytbl <- tibble(x = c(1, 2, NA), y = c("a", NA, "b"))
+mytbl
+mytbl %>% drop_na(x)                                # x 변수에서 결측값이 있는 행 제거
+mytbl %>% drop_na()                                 # 모든 변수에 대해 결측값이 있는 행 제거
+
+# Example for replace_na()
+# 데이터 프레임에 있는 결측값을 대체하는 경우, 매개변수를 list로 입력
+# x변수의 결측값은 0, y 변수의 결측값은 unkown으로 대체
+mytbl
+mytbl %>% replace_na(list(x = 0, y = "unkown"))
+
+# 벡터에 있는 결측값을 대체하는 경우, 매개변수를 단일값으로 입력
+mytbl$x %>% replace_na(0)
+mytbl$y %>% replace_na("unknown")
+mytbl %>% mutate(x = replace_na(x, 0), y = replace_na(y, "unknown"))
