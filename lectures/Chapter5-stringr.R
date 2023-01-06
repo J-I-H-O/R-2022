@@ -139,3 +139,50 @@ str_view(c('a"c'), '\"')                     # method 2. 큰 따옴표를 문자
 str_view(c("a\\b"), "\\\\")                  # 역슬래시는 기호로 사용하기 위해 두번 써줘야 함
 str_view(c("abc", "a.c", "bef"), "\\.")      # 점(.)은 예외적으로 역슬래시를 두번 넣어 \\. 와 같이 표현
 str_view(c("abc", "a.c", "bef"), "a\\.c")
+
+## 5.3.4.2 str_detect() 함수
+# 패턴이 일치하면 TRUE 반환
+# 정규 표현식 사용 가능
+
+# [예제1] 주어진 문자열들에 알파벳 "e"가 포함되어 있는지 확인
+str_detect(c("apple", "banana", "pear"), "e")
+
+# [예제2] R 기본 데이터셋 words 이용
+words
+sum(str_detect(words, "^t"))                 # t로 시작하는 단어의 수
+mean(str_detect(words, "[aeiou]$"))          # 모음으로 끝나는 단어의 비율
+
+# [예제3] babynames 라이브러리에 포함된 데이터셋 사용
+# filter 함수와 함께 사용
+library(babynames)
+babynames 
+babynames %>% filter(str_detect(name, "x"))  # 이름에 "x"가 포함되는 아기 이름 filter
+
+babynames %>%
+  group_by(year) %>%                               # 연도별로 그룹
+  summarise(prop_x = mean(str_detect(name, "X")))  # 이름에 x가 포함되는 아기들의 비율 산출
+
+
+## 5.3.4.3 str_count() 함수
+# str_detect() 함수의 변형으로, 일치하는 패턴의 개수 반환
+
+# [예제1] 각 문자열에서 p의 개수 출력
+str_count(c("apple", "banana", "pear"), "p")
+
+# [예제2]
+babynames %>%
+  count(name) %>%
+  mutate(vowels = str_count(name, "[aeiouAEIOU]"),
+         consonants = str_count(name, "[^aeiouAEIOU]"))
+
+## 5.3.4.4 str_replace(), str_replace_all() 함수
+# 일치하는 패턴을 새 문자열로 변경
+
+# [예제1]
+x <- c("apple", "pear", "banana")
+str_replace(x, "[aeiou]", "-")                    # 처음으로 일치하는 패턴만 변경
+str_replace_all(x, "[aeiou]", "-")                # 일치하는 모든 패턴을 변경
+
+# [예제2] 벡터를 이용하여 다중 대체 가능
+x <- c("1 house", "2 cars", "3 people")
+str_replace_all(x, c("1" = "one", "2" = "two", "3" = "three"))
