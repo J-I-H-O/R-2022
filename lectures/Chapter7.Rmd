@@ -1,0 +1,206 @@
+---
+title: "Chaper7 R markdown"
+subtitle: "R Markdown 문법 정리"
+author: ""
+date: "2023-01-11"
+output: 
+  - "html_document"
+  - "pdf_document"
+---  
+
+### **7.3.1 인라인 서식**
+
+- **이텔릭체** : `별(*)` 또는 `언더바(_)`로 감싸서 표현 (예: *이텔릭*, _이텔릭_)  
+- **볼드체** : `별 두개(**)` 또는 `언더바 두개(__)`로 감싸서 표현 (예: **볼드**, __볼드__)  
+  
+- **인라인 코드(inline code)** : backtick으로 감싸서 표현 (예: `인라인 코드`)  
+- **코드 블록(plain code blocks)** : backtick 세개로 감싸서 표현. R코드 청크와 다름
+```
+코드블록
+```
+- **줄바꿈**: 줄바꿈 시 공백 두 칸 입력 후 엔터  
+- **가로줄**: 세 개 이상의 `***(asterisk)` 또는 `---(dashes)` 입력
+
+***
+
+---
+
+- **표(tables)**
+  - 표의 칸을 나눠주기 위해서 `|`, 표의 줄을 나눠주기 위해서 엔터(개행)  
+  - 대쉬(-) 하나당 셀의 너비를 의미함. 많이 입력할수록 더 넓은 셀 생성  
+  - 대쉬 한쪽에 `:` 입력 시 해당 방향으로 정렬, 대쉬 양 끝에 `:` 입력 시 중앙 정렬
+
+ First Header |  Second Header  | Third Header
+:-------------|:---------------:|--------------:
+ Left-aligned |    Centered     | Right-aligned
+ Content Cell |  Content Cell   |  Content Cell
+   
+- **그 외 서식**
+  - 위 첨자: `^`으로 감싸줌 (예: superscript^2^)
+  - 아래 첨자: `~`으로 감싸줌 (예: superscript~2~)
+  - 삭제 표시: `~~`으로 감싸줌 (예: ~~strikethrough~~)
+  
+
+### **7.3.2 블록 요소**  
+- **장/절** : `#` 기호의 숫자로 표시, 최대 6단계
+```
+# First-level header
+## Second-level header
+```
+
+- **목록**  
+  - 순서가 없는 목록: `-`, `+`, `*` 기호 중 하나를 사용
+  - 순서가 있는 목록: 숫자로 표현
+
+```
+* Item 1
+* Item 2
+  + Item 2a
+  + Item 2b
+    
+1. Item 1
+2. Item 2
+```
+
+- **인용구**  
+`>` 기호로 표시
+
+> 인용구 예시
+>
+> 예시
+
+- **이미지**  
+이미지 경로 지정 전에 working directory 설정 필요(setwd)  
+
+`![캡션(optional)](경로){width=50%}`
+
+![RStudio](titleImg.png){width=50%}  
+  
+  
+- **링크**
+이미지 삽입 문법과 유사, 느낌표 없음  
+`[캡션](경로)`  
+[Naver](https://www.naver.com)  
+  
+  
+### **7.3.3 수학 표현식**
+- inline equation: `$`로 묶음
+- display equation: `$$`로 묶음
+- 수학 표현식은 LaTeX 문법을 따름  
+$$f(k) = {n \choose k} p^{k} (1-p)^{n-k}$$
+```
+$$f(k) = {n \choose k} p^{k} (1-p)^{n-k}$$
+```
+
+## 7.4 **R 코드 청크**
+- 실제 R 코드가 실행되는 부분
+- ` ```{r} `과 ` ``` ` 사이에 코드 청크 입력
+- 문서를 니트(knit)하면 코드 청크에 있는 모든 R 코드를 순차적으로 실행
+
+
+```{r, chunk_name, chunk_options}
+# codes
+```
+
+### **7.4.2 청크 이름**
+- 청크 이름 사용의 3가지 이점
+  - 스크립트 편집기 왼쪽 하단에 있는 드롭다운 코드 탐색기를 사용하여 특정 청크로 쉽게 이동 가능
+  - 청크에 의해 생성된 그래프가 유용한 이름을 가지게 되어 다른 곳에서 쉽게 사용 가능
+  - 캐시된 청크 네트워크를 설정하여 불필요한 계산을 피할 수 있음
+  
+```{r, chunk2}
+library(tidyverse)
+```
+  
+### **7.4.3 청크 옵션**
+강의 자료 참고  
+results 옵션: 출력 결과 포맷 지정을 위한 옵션
+
+```{r results="markup"}
+# result = "markup"(default)
+cat("I'm raw **Markdown** content\n")
+```
+markup: R에서 위 코드를 실행한 결과를 그대로 출력함.
+
+```{r results="asis"}
+# result = "asis"
+cat("I'm raw **Markdown** content\n")
+```
+asis: R markdown 문법대로 결과를 출력함
+
+```{r results="hide"}
+# result = "hide"
+cat("I'm raw **Markdown** content\n")
+```
+hide: 코드도 실행되고 육안으로도 보이나, 출력 결과가 안보임
+
+```{r results="hold"}
+# result = "hold"
+1+2
+head(iris)
+plot(iris$Sepal.Length, iris$Sepal.Width)
+
+```
+hold: 여러줄의 코드를 하나의 청크로 묶어줌(설정하지 않으면 한줄씩 분리되어 실행됨)
+
+```{r include = FALSE}
+# include = FALSE
+cat("I'm raw **Markdown** content\n")
+```
+inclue: 코드를 실행 시키지만, 코드 자체나 출력을 숨김. 라이브러리 include하는 상황 등에서 사용
+
+```{r echo = FALSE}
+# echo = FALSE
+cat("I'm raw **Markdown** content\n")
+```
+echo: 실행도 시키고 실행 결과도 출력, 코드는 숨김
+
+### **7.4.4 표 삽입**
+knitr::kable() 함수 사용
+R에서는 knitr 라이브러리를 별도로 불러오지 않고도 사용 가능하지만, R markdown 문서에서는 따로 불러와야 함
+
+```{r}
+head(iris)
+library(knitr)
+kable(head(iris))
+```
+
+### **7.4.5 전역 옵션**
+- 문서 전체에 적용되는 기본 옵션을 설정할 수 있음  
+- (문서 내 전체 코드 청크에 옵션을 주고 싶은 경우 등)  
+- 청크 옵션을 모을 수 있는 객체 knitr::opts_chunk 사용  
+
+  - `opts_chunk$set()`: 전역 옵션 설정  
+  - `opts_chunk$get()`: 설정된 값 확인  
+  - `opts_chunk$restore()`: 기본 설정으로 변경  
+  
+- 옵션들도 코드청크 내에 작성해야 함  
+  
+```{r}
+opts_chunk$get("warning")
+opts_chunk$set("warning" = FALSE)
+opts_chunk$get("warning")
+opts_chunk$restore()
+opts_chunk$get("warning")
+```
+
+- 전역 옵션 설정: warning = FALSE
+```{r}
+opts_chunk$set(warning = FALSE)
+```
+
+- 개별 청크에서 warning 옵션을 설정하지 않은 경우, 전역 옵션 설정을 따름
+```{r}
+as.numeric(c(1,2,"a"))
+```
+
+- 개별 청크에서 warning 옵션을 설정하는 경우, 전역 설정을 무시하고 해당 옵션 설정을 따름
+```{r warning=TRUE}
+# 전역 옵션은 warning=FALSE 이지만, 개별 옵션이 warning=TRUE 이므로 warning message 출력
+as.numeric(c(1,2,"a"))
+```
+
+### **7.4.6 인라인 코드***
+- R 코드를 인라인에서 실행시키고 싶은 경우, (backtick)r 과 (backtick) 사이에 코드 입력  
+
+ncol(iris)의 결과는 `r ncol(iris)` 입니다.
